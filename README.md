@@ -7,11 +7,12 @@ Second year CS thematic project. Team of 6 working to create a 'Mode Database Pr
 </p>
 
 ## Run on local machine
-### Prerequisites:
-    - Node ~ latest
 ```
     npm run dev
 ```
+
+### Prerequisites:
+    - Node ~ latest
 
 
 ## Contributors:
