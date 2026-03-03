@@ -14,7 +14,6 @@ Second year CS thematic project. Team of 6 working to create a 'Mode Database Pr
 ### Prerequisites:
     - Node ~ latest
 
-
 ## Contributors:
 - [Hadi](https://github.com/Hadookhan)
 - [Naz](https://github.com/nazim879-code)
