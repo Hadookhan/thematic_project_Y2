@@ -3,8 +3,8 @@ import ScrollToTop from "./components/ScrollToTop";
 import Home from './pages/Home';
 import Browse from './pages/Browse';
 import Search from './pages/Search';
-import Actors from './pages/Actors';
-import Directors from './pages/Directors';
+import Actors_Directors from './pages/Actors_Directors';
+import Movie from './pages/Movie';
 
 function App() {
 
@@ -16,8 +16,9 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/browse" element={<Browse />} />
           <Route path="/search" element={<Search />} />
-          <Route path="/actors" element={<Actors />} />
-          <Route path="/directors" element={<Directors />} />
+          <Route path="/info" element={<Actors_Directors />} />
+          {/* movie could also be quieried into the info endpoint (such like actors and directors are) */}
+          <Route path="/movie" element={<Movie />} /> 
         </Routes>
     {/* <Footer /> */}
     </>
