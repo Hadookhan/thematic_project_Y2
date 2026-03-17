@@ -230,7 +230,7 @@ export default function Home() {
             searchResults.map((movie) => (
               <div key={movie.movie_id}>
                 <h4>{movie.title}</h4>
-                <p>Year: {movie.year ?? 'N/A'}</p>
+                <p>Year: {movie.release_year ?? 'N/A'}</p>
                 <p>Rating: {movie.rating ?? 'N/A'}</p>
                 <p>
                   Genres:{' '}
