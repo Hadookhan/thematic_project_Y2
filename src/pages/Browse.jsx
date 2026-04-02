@@ -4,6 +4,7 @@ import {
   fetchAllGenres,
   clearBrowseData,
 } from '../services/browseService';
+import { Link } from 'react-router-dom';
 
 export default function Browse() {
   const [movies, setMovies] = useState([]);
@@ -146,17 +147,18 @@ export default function Browse() {
 
         {movies.length > 0 ? (
           movies.map((movie) => (
-            <div key={movie.movie_id} className="movie-card">
-              <h3>{movie.title}</h3>
-              <p>{movie.overview || 'No overview available.'}</p>
-              <p>Year: {movie.release_year ?? 'N/A'}</p>
-              <p>Runtime: {movie.runtime ?? 'N/A'} mins</p>
-              <p>Rating: {movie.rating ?? 'N/A'}</p>
-              <p>
-                Genres:{' '}
-                {movie.genres?.length > 0 ? movie.genres.join(', ') : 'N/A'}
-              </p>
-            </div>
+            <Link to={`/movie/${movie.movie_id}`}>
+                <div className="movie-card">
+                    <h3>{movie.title}</h3>
+                    <p>{movie.overview || 'No overview available.'}</p>
+                    <p>Year: {movie.release_year ?? 'N/A'}</p>
+                    <p>Runtime: {movie.runtime ?? 'N/A'} mins</p>
+                    <p>Rating: {movie.rating ?? 'N/A'}</p>
+                    <p>
+                    Genres: {movie.genres?.length > 0 ? movie.genres.join(', ') : 'N/A'}
+                    </p>
+                </div>
+            </Link>
           ))
         ) : (
           !loading && <p>No movies found.</p>
