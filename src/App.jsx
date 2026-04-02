@@ -16,7 +16,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/browse" element={<Browse />} />
           <Route path="/search" element={<Search />} />
-          <Route path="/info" element={<Actors_Directors />} />
+          <Route path="/person/:personId" element={<Actors_Directors />} />
           {/* movie could also be quieried into the info endpoint (such like actors and directors are) */}
           <Route path="/movie/:movieId" element={<Movie />} />
         </Routes>

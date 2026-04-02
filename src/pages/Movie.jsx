@@ -92,7 +92,8 @@ export default function Movie() {
           <ul>
             {cast.map((member) => (
               <li key={`${member.person_id}-${member.cast_order}`}>
-                {member.name} as {member.character || 'Unknown Character'}
+                <Link to={`/person/${member.person_id}`}>{member.name}</Link>
+                {` as ${member.character || 'Unknown Character'}`}
               </li>
             ))}
           </ul>
@@ -107,7 +108,8 @@ export default function Movie() {
           <ul>
             {crew.map((member, index) => (
               <li key={`${member.person_id}-${member.job}-${index}`}>
-                {member.name} - {member.job || 'Unknown Job'} ({member.department || 'Unknown Department'})
+                <Link to={`/person/${member.person_id}`}>{member.name}</Link>
+                {` - ${member.job || 'Unknown Job'} (${member.department || 'Unknown Department'})`}
               </li>
             ))}
           </ul>
