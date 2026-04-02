@@ -17,55 +17,65 @@ export default function Home() {
   // ratings table is separate
   // ----------------------------------------
   async function fetchRating(movieId) {
-    const { data, error } = await supabase
-      .from('ratings')
-      .select('rating')
-      .eq('movie_id', movieId)
-      .single();
+  const { data, error } = await supabase
+    .from('ratings')
+    .select('rating, movie_id')
+    .eq('movie_id', movieId);
 
-    if (error) {
-      console.error('Error fetching rating:', error.message);
-      return null;
-    }
+  console.log('fetchRating movieId:', movieId);
+  console.log('ratings rows:', data);
+  console.log('ratings error:', error);
 
-    return data?.rating ?? null;
+  if (error) {
+    console.error('Error fetching rating:', error.message);
+    return null;
   }
+
+  if (!data || data.length === 0) {
+    return null;
+  }
+
+  const avg =
+    data.reduce((sum, row) => sum + Number(row.rating), 0) / data.length;
+
+  return avg.toFixed(1);
+}
 
   // ----------------------------------------
   // fetch_genre(movie_id)
   // uses movie_genres junction table + genres table
   // ----------------------------------------
   async function fetchGenre(movieId) {
-    // Step 1: get genre ids linked to the movie
-    const { data: movieGenreRows, error: movieGenreError } = await supabase
-      .from('movie_genres')
-      .select('genre_id')
-      .eq('movie_id', movieId);
+  // Step 1: get genre ids linked to the movie
+  const { data: movieGenreRows, error: movieGenreError } = await supabase
+    .from('movie_genres')
+    .select('genre_id')
+    .eq('movie_id', movieId);
 
-    if (movieGenreError) {
-      console.error('Error fetching movie_genres:', movieGenreError.message);
-      return [];
-    }
-
-    if (!movieGenreRows || movieGenreRows.length === 0) {
-      return [];
-    }
-
-    const genreIds = movieGenreRows.map((row) => row.genre_id);
-
-    // Step 2: get genre names from genres table
-    const { data: genreRows, error: genreError } = await supabase
-      .from('genres')
-      .select('genre_id, name')
-      .in('genre_id', genreIds);
-
-    if (genreError) {
-      console.error('Error fetching genres:', genreError.message);
-      return [];
-    }
-
-    return genreRows?.map((row) => row.genre_name) ?? [];
+  if (movieGenreError) {
+    console.error('Error fetching movie_genres:', movieGenreError.message);
+    return [];
   }
+
+  if (!movieGenreRows || movieGenreRows.length === 0) {
+    return [];
+  }
+
+  const genreIds = movieGenreRows.map((row) => row.genre_id);
+
+  // Step 2: get genre names from genres table
+  const { data: genreRows, error: genreError } = await supabase
+    .from('genres')
+    .select('genre_id, name')
+    .in('genre_id', genreIds);
+
+  if (genreError) {
+    console.error('Error fetching genres:', genreError.message);
+    return [];
+  }
+
+  return genreRows?.map((row) => row.name) ?? [];
+}
 
   // ----------------------------------------
   // clear_data(data_box)
@@ -141,7 +151,7 @@ export default function Home() {
     setLoading(false);
   }
 
-  // ----------------------------------------
+  // ----------------------------------------//
   // toggle_on_off()
   // ----------------------------------------
   function toggleOnOff() {
