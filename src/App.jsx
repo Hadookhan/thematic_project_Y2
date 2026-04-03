@@ -10,6 +10,7 @@ function App() {
 
   return (
     <>
+    {/* test */}
     {/* <Navbar /> */}
     <ScrollToTop />
         <Routes>
