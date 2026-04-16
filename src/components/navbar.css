@@ -1,52 +1,48 @@
 .navbar {
+  height: 62px;
+  padding: 0 40px;
+  background: #02192e;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 20px 40px;
-  background: #111827;
-  border-bottom: 1px solid #1f2937;
+  justify-content: space-between;
 }
 
 .logo {
-  font-size: 26px;
-  font-weight: bold;
-  color: #f97316;
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  text-decoration: none;
+}
+
+.logo-dot {
+  color: #ff7a1a;
 }
 
 .nav-links {
   display: flex;
-  gap: 24px;
-}
-
-.nav-links a {
-  display: flex;
+  gap: 26px;
   align-items: center;
-  gap: 8px;
-  color: white;
-  text-decoration: none;
+}
+
+.nav-link {
+  color: #c7d1df;
   font-size: 14px;
-  transition: color 0.2s ease;
+  font-weight: 600;
+  text-decoration: none;
 }
 
-.nav-links a:hover {
-  color: #f97316;
+.nav-link.active {
+  color: #ff7a1a;
 }
 
-.signin {
-  color: #f97316;
-  font-size: 22px;
-  cursor: pointer;
-}
-
-@media (max-width: 1000px) {
-  .navbar {
-    flex-wrap: wrap;
-    gap: 16px;
-    padding: 18px 20px;
-  }
-
-  .nav-links {
-    flex-wrap: wrap;
-    gap: 16px;
-  }
+.profile-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #ff7a1a;
+  color: white;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
 }
