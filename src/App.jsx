@@ -1,4 +1,6 @@
-import { Routes, Route } from 'react-router-dom';
+
+import { Routes, Route } from "react-router-dom";
+import Navbar from './components/navbar';
 import ScrollToTop from "./components/ScrollToTop";
 import Home from './pages/Home';
 import Browse from './pages/Browse';
@@ -10,7 +12,7 @@ function App() {
 
   return (
     <>
-    {/* <Navbar /> */}
+    <Navbar />
     <ScrollToTop />
         <Routes>
           <Route path="/" element={<Home />} />
@@ -18,7 +20,7 @@ function App() {
           <Route path="/search" element={<Search />} />
           <Route path="/info" element={<Actors_Directors />} />
           {/* movie could also be quieried into the info endpoint (such like actors and directors are) */}
-          <Route path="/movie" element={<Movie />} /> 
+          <Route path="/movie/:id" element={<Movie />} />
         </Routes>
     {/* <Footer /> */}
     </>
@@ -26,3 +28,5 @@ function App() {
 }
 
 export default App;
+
+
