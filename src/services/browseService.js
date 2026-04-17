@@ -1,9 +1,9 @@
 import { supabase } from '../lib/supabase';
 
-// -----------------------------
-// fetch_rating(movie_id)
-// Returns average rating for a movie
-// -----------------------------
+// --------------------------------------------------
+// ratings(movie_id, rating)
+// returns average rating for one movie
+// --------------------------------------------------
 export async function fetchRating(movieId) {
   const { data, error } = await supabase
     .from('ratings')
@@ -15,9 +15,7 @@ export async function fetchRating(movieId) {
     return null;
   }
 
-  if (!data || data.length === 0) {
-    return null;
-  }
+  if (!data || data.length === 0) return null;
 
   const avg =
     data.reduce((sum, row) => sum + Number(row.rating), 0) / data.length;
@@ -25,10 +23,9 @@ export async function fetchRating(movieId) {
   return Number(avg.toFixed(1));
 }
 
-// -----------------------------
-// fetch_genre(movie_id)
-// Uses movie_genres + genres
-// -----------------------------
+// --------------------------------------------------
+// movie_genres(movie_id, genre_id) + genres(genre_id, name)
+// --------------------------------------------------
 export async function fetchGenre(movieId) {
   const { data: movieGenreRows, error: movieGenreError } = await supabase
     .from('movie_genres')
@@ -40,15 +37,13 @@ export async function fetchGenre(movieId) {
     return [];
   }
 
-  if (!movieGenreRows || movieGenreRows.length === 0) {
-    return [];
-  }
+  if (!movieGenreRows || movieGenreRows.length === 0) return [];
 
   const genreIds = movieGenreRows.map((row) => row.genre_id);
 
   const { data: genreRows, error: genreError } = await supabase
     .from('genres')
-    .select('name')
+    .select('genre_id, name')
     .in('genre_id', genreIds);
 
   if (genreError) {
@@ -59,89 +54,75 @@ export async function fetchGenre(movieId) {
   return genreRows?.map((row) => row.name) ?? [];
 }
 
-// -----------------------------
-// clear_data()
-// returns empty browse state shape
-// -----------------------------
-export function clearBrowseData() {
-  return {
-    searchInput: '',
-    selectedGenre: '',
-    minYear: '',
-    maxYear: '',
-    minRating: '',
-    results: [],
-    error: '',
-  };
-}
+// --------------------------------------------------
+// cast_credits(movie_id, person_id) + people(person_id, name)
+// actor filter helper
+// --------------------------------------------------
+export async function fetchCastNames(movieId) {
+  const { data: castRows, error: castError } = await supabase
+    .from('cast_credits')
+    .select('person_id')
+    .eq('movie_id', movieId);
 
-// -----------------------------
-// string_to_query()
-// safe descriptor instead of raw SQL
-// -----------------------------
-export function stringToQuery(value, column, table) {
-  return {
-    value: String(value).trim(),
-    column,
-    table,
-  };
-}
-
-// -----------------------------
-// add_to_query()
-// combine query descriptors
-// -----------------------------
-export function addToQuery(currentQuery, newQuery) {
-  if (!currentQuery) return [newQuery];
-  return [...currentQuery, newQuery];
-}
-
-// -----------------------------
-// get_all_movies()
-// base browse fetch
-// -----------------------------
-export async function getAllMovies(limit = 24) {
-  const { data, error } = await supabase
-    .from('movies')
-    .select('movie_id, title, overview, release_date, release_year, runtime')
-    .order('release_year', { ascending: false })
-    .limit(limit);
-
-  if (error) {
-    console.error('Error fetching movies:', error.message);
-    throw new Error('Failed to fetch movies.');
+  if (castError) {
+    console.error('Error fetching cast_credits:', castError.message);
+    return [];
   }
 
-  return data || [];
-}
+  if (!castRows || castRows.length === 0) return [];
 
-// -----------------------------
-// search_query(input_str, target_col, table)
-// movie title search
-// -----------------------------
-export async function searchMoviesByTitle(inputStr, targetCol = 'title', table = 'movies') {
-  const trimmed = inputStr.trim();
+  const personIds = castRows.map((row) => row.person_id);
 
-  if (!trimmed) return [];
+  const { data: peopleRows, error: peopleError } = await supabase
+    .from('people')
+    .select('person_id, name')
+    .in('person_id', personIds);
 
-  const { data, error } = await supabase
-    .from(table)
-    .select('movie_id, title, overview, release_date, release_year, runtime')
-    .ilike(targetCol, `%${trimmed}%`)
-    .order('release_year', { ascending: false });
-
-  if (error) {
-    console.error('Search error:', error.message);
-    throw new Error('Failed to search movies.');
+  if (peopleError) {
+    console.error('Error fetching cast people:', peopleError.message);
+    return [];
   }
 
-  return data || [];
+  return peopleRows?.map((row) => row.name) ?? [];
 }
 
-// -----------------------------
-// fetch_all_genres()
-// for filter dropdown
-// -----------------------------
+// --------------------------------------------------
+// crew_credits(movie_id, person_id, job) + people(person_id, name)
+// director filter helper
+// --------------------------------------------------
+export async function fetchDirectorNames(movieId) {
+  const { data: crewRows, error: crewError } = await supabase
+    .from('crew_credits')
+    .select('person_id, job')
+    .eq('movie_id', movieId)
+    .eq('job', 'Director');
+
+  if (crewError) {
+    console.error('Error fetching crew_credits:', crewError.message);
+    return [];
+  }
+
+  if (!crewRows || crewRows.length === 0) return [];
+
+  const personIds = crewRows.map((row) => row.person_id);
+
+  const { data: peopleRows, error: peopleError } = await supabase
+    .from('people')
+    .select('person_id, name')
+    .in('person_id', personIds);
+
+  if (peopleError) {
+    console.error('Error fetching director people:', peopleError.message);
+    return [];
+  }
+
+  return peopleRows?.map((row) => row.name) ?? [];
+}
+
+// --------------------------------------------------
+// genres table for filter list
+// genres(genre_id, name)
+// --------------------------------------------------
 export async function fetchAllGenres() {
   const { data, error } = await supabase
     .from('genres')
@@ -156,105 +137,208 @@ export async function fetchAllGenres() {
   return data || [];
 }
 
-// -----------------------------
-// enrich movies with ratings + genres
-// -----------------------------
+// --------------------------------------------------
+// reset state helper
+// --------------------------------------------------
+export function clearBrowseData() {
+  return {
+    searchInput: '',
+    selectedGenres: [],
+    actorName: '',
+    directorName: '',
+    results: [],
+    error: '',
+  };
+}
+
+// --------------------------------------------------
+// movies(movie_id, title, overview, release_date, release_year, runtime, budget, revenue)
+// base movie fetch
+// --------------------------------------------------
+export async function getAllMovies(limit = 300) {
+  const { data, error } = await supabase
+    .from('movies')
+    .select(`
+      movie_id,
+      title,
+      overview,
+      release_date,
+      release_year,
+      runtime,
+      budget,
+      revenue
+    `)
+    .order('release_year', { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error('Error fetching movies:', error.message);
+    throw new Error('Failed to fetch movies.');
+  }
+
+  return data || [];
+}
+
+// --------------------------------------------------
+// title search from movies.title
+// --------------------------------------------------
+export async function searchMoviesByTitle(inputStr) {
+  const trimmed = inputStr.trim();
+
+  if (!trimmed) {
+    return getAllMovies();
+  }
+
+  const { data, error } = await supabase
+    .from('movies')
+    .select(`
+      movie_id,
+      title,
+      overview,
+      release_date,
+      release_year,
+      runtime,
+      budget,
+      revenue
+    `)
+    .ilike('title', `%${trimmed}%`)
+    .order('release_year', { ascending: false });
+
+  if (error) {
+    console.error('Search error:', error.message);
+    throw new Error('Failed to search movies.');
+  }
+
+  return data || [];
+}
+
+// --------------------------------------------------
+// enrich each movie with related data
+// --------------------------------------------------
 export async function enrichMovies(movieRows) {
   return Promise.all(
     (movieRows || []).map(async (movie) => {
-      const [rating, genres] = await Promise.all([
+      const [rating, genres, castNames, directorNames] = await Promise.all([
         fetchRating(movie.movie_id),
         fetchGenre(movie.movie_id),
+        fetchCastNames(movie.movie_id),
+        fetchDirectorNames(movie.movie_id),
       ]);
 
       return {
         ...movie,
         rating,
         genres,
+        castNames,
+        directorNames,
       };
     })
   );
 }
 
-// -----------------------------
-// apply browse filters in JS
-// Since rating/genres are computed separately
-// -----------------------------
+// --------------------------------------------------
+// JS-side filter logic using correct schema fields
+// --------------------------------------------------
 export function filterMovies(movies, filters) {
   const {
-    selectedGenre = '',
+    selectedGenres = [],
     minYear = '',
     maxYear = '',
-    minRating = '',
+    minBudget = '',
+    maxBudget = '',
+    minRevenue = '',
+    maxRevenue = '',
+    actorName = '',
+    directorName = '',
   } = filters;
 
   return (movies || []).filter((movie) => {
     const movieYear = Number(movie.release_year);
-    const movieRating = movie.rating == null ? null : Number(movie.rating);
-    const movieGenres = movie.genres || [];
+    const movieBudget = Number(movie.budget);
+    const movieRevenue = Number(movie.revenue);
 
-    const matchesGenre =
-      !selectedGenre || movieGenres.includes(selectedGenre);
+    const matchesGenres =
+      selectedGenres.length === 0 ||
+      selectedGenres.every((genre) => movie.genres?.includes(genre));
 
     const matchesMinYear =
-      !minYear || (!Number.isNaN(movieYear) && movieYear >= Number(minYear));
+      minYear === '' || (!Number.isNaN(movieYear) && movieYear >= Number(minYear));
 
     const matchesMaxYear =
-      !maxYear || (!Number.isNaN(movieYear) && movieYear <= Number(maxYear));
+      maxYear === '' || (!Number.isNaN(movieYear) && movieYear <= Number(maxYear));
 
-    const matchesMinRating =
-      !minRating ||
-      (movieRating !== null && movieRating >= Number(minRating));
+    const matchesMinBudget =
+      minBudget === '' || (!Number.isNaN(movieBudget) && movieBudget >= Number(minBudget));
+
+    const matchesMaxBudget =
+      maxBudget === '' || (!Number.isNaN(movieBudget) && movieBudget <= Number(maxBudget));
+
+    const matchesMinRevenue =
+      minRevenue === '' || (!Number.isNaN(movieRevenue) && movieRevenue >= Number(minRevenue));
+
+    const matchesMaxRevenue =
+      maxRevenue === '' || (!Number.isNaN(movieRevenue) && movieRevenue <= Number(maxRevenue));
+
+    const matchesActor =
+      !actorName.trim() ||
+      movie.castNames?.some((name) =>
+        name.toLowerCase().includes(actorName.toLowerCase())
+      );
+
+    const matchesDirector =
+      !directorName.trim() ||
+      movie.directorNames?.some((name) =>
+        name.toLowerCase().includes(directorName.toLowerCase())
+      );
 
     return (
-      matchesGenre &&
+      matchesGenres &&
       matchesMinYear &&
       matchesMaxYear &&
-      matchesMinRating
+      matchesMinBudget &&
+      matchesMaxBudget &&
+      matchesMinRevenue &&
+      matchesMaxRevenue &&
+      matchesActor &&
+      matchesDirector
     );
   });
 }
 
-// -----------------------------
+// --------------------------------------------------
 // main browse loader
-// -----------------------------
+// --------------------------------------------------
 export async function browseMovies({
   searchInput = '',
-  selectedGenre = '',
+  selectedGenres = [],
   minYear = '',
   maxYear = '',
-  minRating = '',
-  limit = 24,
+  minBudget = '',
+  maxBudget = '',
+  minRevenue = '',
+  maxRevenue = '',
+  actorName = '',
+  directorName = '',
 } = {}) {
-  let baseMovies = [];
+  const baseMovies = await searchMoviesByTitle(searchInput);
+  const enrichedMovies = await enrichMovies(baseMovies);
 
-  if (searchInput.trim()) {
-    baseMovies = await searchMoviesByTitle(searchInput, 'title', 'movies');
-  } else {
-    baseMovies = await getAllMovies(limit);
-  }
-
-  const enriched = await enrichMovies(baseMovies);
-
-  const filtered = filterMovies(enriched, {
-    selectedGenre,
+  const filtered = filterMovies(enrichedMovies, {
+    selectedGenres,
     minYear,
     maxYear,
-    minRating,
+    minBudget,
+    maxBudget,
+    minRevenue,
+    maxRevenue,
+    actorName,
+    directorName,
   });
 
   filtered.sort((a, b) => {
-    const ratingA = a.rating ?? -1;
-    const ratingB = b.rating ?? -1;
-
-    if (ratingB !== ratingA) return ratingB - ratingA;
-
     const yearA = a.release_year ?? 0;
     const yearB = b.release_year ?? 0;
-
-    if (yearB !== yearA) return yearB - yearA;
-
-    return a.title.localeCompare(b.title);
+    return yearB - yearA;
   });
 
   return filtered;

@@ -1,39 +1,140 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   browseMovies,
   fetchAllGenres,
   clearBrowseData,
 } from '../services/browseService';
 import { Link } from 'react-router-dom';
+import '../css/browse.css';
 
 export default function Browse() {
   const [movies, setMovies] = useState([]);
   const [genreOptions, setGenreOptions] = useState([]);
 
   const [searchInput, setSearchInput] = useState('');
-  const [selectedGenre, setSelectedGenre] = useState('');
-  const [minYear, setMinYear] = useState('');
-  const [maxYear, setMaxYear] = useState('');
-  const [minRating, setMinRating] = useState('');
+  const [selectedGenres, setSelectedGenres] = useState([]);
+  const [selectedYears, setSelectedYears] = useState([]);
+  const [selectedBudgetRanges, setSelectedBudgetRanges] = useState([]);
+  const [selectedRevenueRanges, setSelectedRevenueRanges] = useState([]);
+  const [actorName, setActorName] = useState('');
+  const [directorName, setDirectorName] = useState('');
 
-  const [toggleState, setToggleState] = useState(false);
+  const [openSections, setOpenSections] = useState({
+    genre: true,
+    year: false,
+    money: false,
+    people: false,
+  });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  function toggleOnOff() {
-    setToggleState((prev) => !prev);
+  const yearOptions = [
+    '2024',
+    '2023',
+    '2022',
+    '2021',
+    '2020',
+    '2019',
+    '2018',
+    '2017',
+    '2016',
+    '2015',
+  ];
+
+  const budgetOptions = [
+    '0-10000000',
+    '10000000-50000000',
+    '50000000-100000000',
+    '100000000-200000000',
+    '200000000-500000000',
+  ];
+
+  const revenueOptions = [
+    '0-50000000',
+    '50000000-100000000',
+    '100000000-300000000',
+    '300000000-500000000',
+    '500000000-1000000000',
+    '1000000000-9999999999',
+  ];
+
+  function toggleSection(section) {
+    setOpenSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  }
+
+  function toggleFromArray(value, setter) {
+    setter((prev) =>
+      prev.includes(value)
+        ? prev.filter((item) => item !== value)
+        : [...prev, value]
+    );
+  }
+
+  function removeFilter(type, value) {
+    if (type === 'genre') {
+      setSelectedGenres((prev) => prev.filter((v) => v !== value));
+    }
+    if (type === 'year') {
+      setSelectedYears((prev) => prev.filter((v) => v !== value));
+    }
+    if (type === 'budget') {
+      setSelectedBudgetRanges((prev) => prev.filter((v) => v !== value));
+    }
+    if (type === 'revenue') {
+      setSelectedRevenueRanges((prev) => prev.filter((v) => v !== value));
+    }
+    if (type === 'actor') {
+      setActorName('');
+    }
+    if (type === 'director') {
+      setDirectorName('');
+    }
   }
 
   function handleClear() {
     const cleared = clearBrowseData();
 
-    setSearchInput(cleared.searchInput);
-    setSelectedGenre(cleared.selectedGenre);
-    setMinYear(cleared.minYear);
-    setMaxYear(cleared.maxYear);
-    setMinRating(cleared.minRating);
-    setMovies(cleared.results);
-    setError(cleared.error);
+    setSearchInput(cleared.searchInput || '');
+    setSelectedGenres(cleared.selectedGenres || []);
+    setSelectedYears([]);
+    setSelectedBudgetRanges([]);
+    setSelectedRevenueRanges([]);
+    setActorName(cleared.actorName || '');
+    setDirectorName(cleared.directorName || '');
+    setMovies(cleared.results || []);
+    setError(cleared.error || '');
+  }
+
+  function convertRangesToMinMax(ranges) {
+    if (!ranges.length) return { min: '', max: '' };
+
+    const parsed = ranges
+      .map((range) => {
+        const [min, max] = range.split('-').map(Number);
+        return { min, max };
+      })
+      .filter((r) => !Number.isNaN(r.min) && !Number.isNaN(r.max));
+
+    if (!parsed.length) return { min: '', max: '' };
+
+    return {
+      min: Math.min(...parsed.map((r) => r.min)),
+      max: Math.max(...parsed.map((r) => r.max)),
+    };
+  }
+
+  function convertYearsToMinMax(years) {
+    if (!years.length) return { min: '', max: '' };
+    const nums = years.map(Number).filter((n) => !Number.isNaN(n));
+    if (!nums.length) return { min: '', max: '' };
+    return {
+      min: Math.min(...nums),
+      max: Math.max(...nums),
+    };
   }
 
   async function loadBrowseData() {
@@ -41,12 +142,21 @@ export default function Browse() {
       setLoading(true);
       setError('');
 
+      const yearRange = convertYearsToMinMax(selectedYears);
+      const budgetRange = convertRangesToMinMax(selectedBudgetRanges);
+      const revenueRange = convertRangesToMinMax(selectedRevenueRanges);
+
       const results = await browseMovies({
         searchInput,
-        selectedGenre,
-        minYear,
-        maxYear,
-        minRating,
+        selectedGenres,
+        minYear: yearRange.min,
+        maxYear: yearRange.max,
+        minBudget: budgetRange.min,
+        maxBudget: budgetRange.max,
+        minRevenue: revenueRange.min,
+        maxRevenue: revenueRange.max,
+        actorName,
+        directorName,
       });
 
       setMovies(results);
@@ -73,97 +183,266 @@ export default function Browse() {
     loadBrowseData();
   }, []);
 
+  const activeFilters = useMemo(() => {
+    const pills = [];
+
+    selectedGenres.forEach((genre) =>
+      pills.push({ type: 'genre', value: genre, label: genre })
+    );
+
+    selectedYears.forEach((year) =>
+      pills.push({ type: 'year', value: year, label: year })
+    );
+
+    selectedBudgetRanges.forEach((range) =>
+      pills.push({ type: 'budget', value: range, label: `Budget ${formatRange(range)}` })
+    );
+
+    selectedRevenueRanges.forEach((range) =>
+      pills.push({ type: 'revenue', value: range, label: `Revenue ${formatRange(range)}` })
+    );
+
+    if (actorName.trim()) {
+      pills.push({ type: 'actor', value: actorName, label: actorName });
+    }
+
+    if (directorName.trim()) {
+      pills.push({ type: 'director', value: directorName, label: directorName });
+    }
+
+    return pills;
+  }, [
+    selectedGenres,
+    selectedYears,
+    selectedBudgetRanges,
+    selectedRevenueRanges,
+    actorName,
+    directorName,
+  ]);
+
+  function formatMoney(n) {
+    const value = Number(n);
+    if (value >= 1000000000) return `${value / 1000000000}B`;
+    if (value >= 1000000) return `${value / 1000000}M`;
+    return `${value}`;
+  }
+
+  function formatRange(range) {
+    const [min, max] = range.split('-');
+    return `${formatMoney(min)}-${formatMoney(max)}`;
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     await loadBrowseData();
   }
 
   return (
-    <div className="browse-page">
-      <h1>Browse Movies</h1>
+    <div className="browse-shell">
+      <div className="browse-top-spacer" />
 
-      {error && <p>{error}</p>}
-      {loading && <p>Loading...</p>}
+      <div className="browse-layout">
+        <aside className="browse-sidebar">
+          <div className="filters-header">
+            <span className="filters-icon">⎇</span>
+            <h2>Filters</h2>
+          </div>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Search by title..."
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-        />
+          <form onSubmit={handleSubmit} className="filters-form">
+            <div className="filter-card">
+              <button
+                type="button"
+                className="filter-card-header"
+                onClick={() => toggleSection('genre')}
+              >
+                <span>Genre</span>
+                <span className={`chev ${openSections.genre ? 'open' : ''}`}>⌃</span>
+              </button>
 
-        <select
-          value={selectedGenre}
-          onChange={(e) => setSelectedGenre(e.target.value)}
-        >
-          <option value="">All Genres</option>
-          {genreOptions.map((genre) => (
-            <option key={genre.genre_id} value={genre.name}>
-              {genre.name}
-            </option>
-          ))}
-        </select>
-
-        <input
-          type="number"
-          placeholder="Min Year"
-          value={minYear}
-          onChange={(e) => setMinYear(e.target.value)}
-        />
-
-        <input
-          type="number"
-          placeholder="Max Year"
-          value={maxYear}
-          onChange={(e) => setMaxYear(e.target.value)}
-        />
-
-        <input
-          type="number"
-          step="0.1"
-          min="0"
-          max="10"
-          placeholder="Min Rating"
-          value={minRating}
-          onChange={(e) => setMinRating(e.target.value)}
-        />
-
-        <button type="submit">Apply</button>
-        <button type="button" onClick={handleClear}>
-          Clear
-        </button>
-      </form>
-
-      <section>
-        <h2>Toggle Example</h2>
-        <button onClick={toggleOnOff}>
-          Toggle is {toggleState ? 'ON' : 'OFF'}
-        </button>
-      </section>
-
-      <section>
-        <h2>Results</h2>
-
-        {movies.length > 0 ? (
-          movies.map((movie) => (
-            <Link to={`/movie/${movie.movie_id}`}>
-                <div className="movie-card">
-                    <h3>{movie.title}</h3>
-                    <p>{movie.overview || 'No overview available.'}</p>
-                    <p>Year: {movie.release_year ?? 'N/A'}</p>
-                    <p>Runtime: {movie.runtime ?? 'N/A'} mins</p>
-                    <p>Rating: {movie.rating ?? 'N/A'}</p>
-                    <p>
-                    Genres: {movie.genres?.length > 0 ? movie.genres.join(', ') : 'N/A'}
-                    </p>
+              {openSections.genre && (
+                <div className="genre-chip-list">
+                  {genreOptions.map((genre) => {
+                    const active = selectedGenres.includes(genre.name);
+                    return (
+                      <button
+                        key={genre.genre_id}
+                        type="button"
+                        className={`genre-chip ${active ? 'active' : ''}`}
+                        onClick={() => toggleFromArray(genre.name, setSelectedGenres)}
+                      >
+                        {genre.name}
+                      </button>
+                    );
+                  })}
                 </div>
-            </Link>
-          ))
-        ) : (
-          !loading && <p>No movies found.</p>
-        )}
-      </section>
+              )}
+            </div>
+
+            <div className="filter-card collapsed">
+              <button
+                type="button"
+                className="filter-card-header"
+                onClick={() => toggleSection('year')}
+              >
+                <span>Release Year</span>
+                <span className={`chev ${openSections.year ? 'open' : ''}`}>⌄</span>
+              </button>
+
+              {openSections.year && (
+                <div className="option-list">
+                  {yearOptions.map((year) => (
+                    <button
+                      key={year}
+                      type="button"
+                      className={`option-chip ${selectedYears.includes(year) ? 'active' : ''}`}
+                      onClick={() => toggleFromArray(year, setSelectedYears)}
+                    >
+                      {year}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="filter-card collapsed">
+              <button
+                type="button"
+                className="filter-card-header"
+                onClick={() => toggleSection('money')}
+              >
+                <span>Budget & Revenue</span>
+                <span className={`chev ${openSections.money ? 'open' : ''}`}>⌄</span>
+              </button>
+
+              {openSections.money && (
+                <div className="money-sections">
+                  <div>
+                    <p className="sub-label">Budget</p>
+                    <div className="option-list">
+                      {budgetOptions.map((range) => (
+                        <button
+                          key={range}
+                          type="button"
+                          className={`option-chip ${selectedBudgetRanges.includes(range) ? 'active' : ''}`}
+                          onClick={() =>
+                            toggleFromArray(range, setSelectedBudgetRanges)
+                          }
+                        >
+                          {formatRange(range)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="sub-label">Revenue</p>
+                    <div className="option-list">
+                      {revenueOptions.map((range) => (
+                        <button
+                          key={range}
+                          type="button"
+                          className={`option-chip ${selectedRevenueRanges.includes(range) ? 'active' : ''}`}
+                          onClick={() =>
+                            toggleFromArray(range, setSelectedRevenueRanges)
+                          }
+                        >
+                          {formatRange(range)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="filter-card collapsed">
+              <button
+                type="button"
+                className="filter-card-header"
+                onClick={() => toggleSection('people')}
+              >
+                <span>Actor & Director</span>
+                <span className={`chev ${openSections.people ? 'open' : ''}`}>⌄</span>
+              </button>
+
+              {openSections.people && (
+                <div className="people-fields">
+                  <input
+                    type="text"
+                    placeholder="Actor name"
+                    value={actorName}
+                    onChange={(e) => setActorName(e.target.value)}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Director name"
+                    value={directorName}
+                    onChange={(e) => setDirectorName(e.target.value)}
+                  />
+                </div>
+              )}
+            </div>
+
+            <button className="apply-btn" type="submit">
+              Apply Filters
+            </button>
+          </form>
+        </aside>
+
+        <main className="browse-content">
+          <div className="active-filters-row">
+            <button type="button" className="clear-all-btn" onClick={handleClear}>
+              Clear All
+            </button>
+
+            <span className="active-filters-label">Active Filters:</span>
+
+            <div className="active-pill-wrap">
+              {activeFilters.map((pill) => (
+                <button
+                  key={`${pill.type}-${pill.value}`}
+                  type="button"
+                  className="active-pill"
+                  onClick={() => removeFilter(pill.type, pill.value)}
+                >
+                  {pill.label} <span>×</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {error && <p className="browse-message">{error}</p>}
+          {loading && <p className="browse-message">Loading...</p>}
+
+          <div className="movie-grid">
+            {movies.length > 0 ? (
+              movies.map((movie, index) => (
+                <Link
+                  key={movie.movie_id}
+                  to={`/movie/${movie.movie_id}`}
+                  className="movie-link"
+                >
+                  <article className="movie-tile">
+                    <div className="poster-placeholder">
+                      <div className="rating-badge">⭐ {movie.rating ?? 'N/A'}</div>
+                    </div>
+
+                    <div className="movie-meta">
+                      <h3>{movie.title || `Movie Title ${index + 1}`}</h3>
+                      <p>
+                        {movie.release_year ?? 'N/A'} •{' '}
+                        {movie.genres?.[0] || 'Action'}
+                      </p>
+                    </div>
+                  </article>
+                </Link>
+              ))
+            ) : (
+              !loading && <p className="browse-message">No movies found.</p>
+            )}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
