@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { runSearch, clearSearchData } from '../services/searchService';
+import '../css/search.css';
 
 export default function Search() {
   const [searchInput, setSearchInput] = useState('');
@@ -11,30 +12,31 @@ export default function Search() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
 
+  // SEARCH
   async function handleSearch(e) {
     e.preventDefault();
 
     if (!searchInput.trim()) {
       setMovieResults([]);
       setPeopleResults([]);
-      setError('');
+      setHasSearched(false);
       return;
     }
 
     try {
       setLoading(true);
       setError('');
+      setHasSearched(true);
 
       const results = await runSearch(searchInput, searchType);
 
-      setMovieResults(results.movies);
-      setPeopleResults(results.people);
+      setMovieResults(results.movies || []);
+      setPeopleResults(results.people || []);
     } catch (err) {
       console.error(err);
       setError('Failed to perform search.');
-      setMovieResults([]);
-      setPeopleResults([]);
     } finally {
       setLoading(false);
     }
@@ -45,87 +47,128 @@ export default function Search() {
 
     setSearchInput(cleared.searchInput);
     setSearchType(cleared.searchType);
-    setMovieResults(cleared.results.movies);
-    setPeopleResults(cleared.results.people);
-    setError(cleared.error);
+    setMovieResults([]);
+    setPeopleResults([]);
+    setError('');
+    setHasSearched(false);
   }
+
+  const noResults =
+    hasSearched &&
+    !loading &&
+    movieResults.length === 0 &&
+    peopleResults.length === 0;
 
   return (
     <div className="search-page">
-      <h1>Search</h1>
 
-      <form onSubmit={handleSearch}>
-        <input
-          type="text"
-          placeholder="Search movies or people..."
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-        />
+      {/* INLINE NAVBAR */}
+      <header className="navbar">
+        <Link to="/" className="logo">
+          Movies4US <span className="logo-dot">•</span>
+        </Link>
 
-        <select
-          value={searchType}
-          onChange={(e) => setSearchType(e.target.value)}
-        >
-          <option value="all">All</option>
-          <option value="movies">Movies</option>
-          <option value="people">Actors / Directors</option>
-        </select>
+        <nav className="nav-links">
+          <Link to="/" className="nav-link">Home</Link>
+          <Link to="/browse" className="nav-link">Browse</Link>
+          <Link to="/search" className="nav-link active">Search</Link>
+          <Link to="/people" className="nav-link">Actors & Directors</Link>
+        </nav>
 
-        <button type="submit">Search</button>
-        <button type="button" onClick={handleClear}>
-          Clear
-        </button>
-      </form>
+        <div className="profile-circle">◌</div>
+      </header>
 
-      {error && <p>{error}</p>}
-      {loading && <p>Loading...</p>}
+      {/* SEARCH UI*/}
+      <div className="search-container">
+        <h1 className="search-title">Search</h1>
 
-      {!loading && !error && movieResults.length === 0 && peopleResults.length === 0 && (
-        <p>No results yet.</p>
-      )}
+        <form onSubmit={handleSearch} className="search-form">
+          <input
+            className="search-input"
+            type="text"
+            placeholder="Search movies or actors..."
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+          />
 
-      {movieResults.length > 0 && (
-        <section>
-          <h2>Movies</h2>
-          <div>
-            {movieResults.map((movie) => (
-              <div key={movie.movie_id} className="movie-card">
-                <Link to={`/movie/${movie.movie_id}`}>
+          <select
+            className="search-select"
+            value={searchType}
+            onChange={(e) => setSearchType(e.target.value)}
+          >
+            <option value="all">All</option>
+            <option value="movies">Movies</option>
+            <option value="people">Actors / Directors</option>
+          </select>
+
+          <button className="search-btn" type="submit">
+            Search
+          </button>
+
+          <button className="clear-btn" type="button" onClick={handleClear}>
+            Clear
+          </button>
+        </form>
+
+        {/* STATES */}
+        {error && <p className="error">{error}</p>}
+        {loading && <p className="loading">Searching...</p>}
+
+        {/* ─────────────────────────────
+            NO RESULTS MESSAGE
+        ───────────────────────────── */}
+        {noResults && (
+          <div className="no-results">
+            <div className="no-results-icon">🎬</div>
+            <h2>No Results Found</h2>
+            <p>No matches for "{searchInput}"</p>
+            <button onClick={handleClear}>Try Again</button>
+          </div>
+        )}
+
+        {/* MOVIES */}
+        {!loading && movieResults.length > 0 && (
+          <section className="results-section">
+            <h2>Movies</h2>
+
+            <div className="results-grid">
+              {movieResults.map((movie) => (
+                <Link
+                  key={movie.movie_id}
+                  to={`/movie/${movie.movie_id}`}
+                  className="card"
+                >
                   <h3>{movie.title}</h3>
+                  <p>{movie.overview || 'No overview available.'}</p>
                 </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
-                <p>{movie.overview || 'No overview available.'}</p>
-                <p>Year: {movie.release_year ?? 'N/A'}</p>
-                <p>Runtime: {movie.runtime ?? 'N/A'} mins</p>
-                <p>Rating: {movie.rating ?? 'N/A'}</p>
-                <p>
-                  Genres:{' '}
-                  {movie.genres?.length > 0 ? movie.genres.join(', ') : 'N/A'}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+        {/* ACTORS & DIRECTORS*/}
+        {!loading && peopleResults.length > 0 && (
+          <section className="results-section">
+            <h2>Actors & Directors</h2>
 
-      {peopleResults.length > 0 && (
-        <section>
-          <h2>Actors / Directors</h2>
-          <div>
-            {peopleResults.map((person) => (
-              <div key={person.person_id} className="person-card">
-                <Link to={`/person/${person.person_id}`}>
+            <div className="results-grid">
+              {peopleResults.map((person) => (
+                <Link
+                  key={person.person_id}
+                  to={`/person/${person.person_id}`}
+                  className="card"
+                >
                   <h3>{person.name}</h3>
+                  <p>{person.roleLabel}</p>
+                  <p>
+                    🎭 {person.actingCount} • 🎬 {person.directingCount}
+                  </p>
                 </Link>
-
-                <p>Role: {person.roleLabel}</p>
-                <p>Acting credits: {person.actingCount}</p>
-                <p>Directed movies: {person.directingCount}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
     </div>
   );
 }
