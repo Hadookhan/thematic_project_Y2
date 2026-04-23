@@ -1,15 +1,42 @@
 import { supabase } from '../lib/supabase';
 
 // -----------------------------------
+// clear_data(data_box)
+// -----------------------------------
 export function clearSearchData() {
   return {
     searchInput: '',
     searchType: 'all',
-    results: { movies: [], people: [] },
+    results: {
+      movies: [],
+      people: [],
+    },
     error: '',
   };
 }
 
+// -----------------------------------
+// string_to_query(string, col, table)
+// safe query descriptor
+// -----------------------------------
+export function stringToQuery(value, column, table) {
+  return {
+    value: String(value).trim(),
+    column,
+    table,
+  };
+}
+
+// -----------------------------------
+// add_to_query(cur_query, new_query)
+// -----------------------------------
+export function addToQuery(currentQuery, newQuery) {
+  if (!currentQuery) return [newQuery];
+  return [...currentQuery, newQuery];
+}
+
+// -----------------------------------
+// fetch movie rating
 // -----------------------------------
 export async function fetchRating(movieId) {
   const { data, error } = await supabase
@@ -17,7 +44,14 @@ export async function fetchRating(movieId) {
     .select('rating')
     .eq('movie_id', movieId);
 
-  if (error || !data || data.length === 0) return null;
+  if (error) {
+    console.error('Error fetching rating:', error.message);
+    return null;
+  }
+
+  if (!data || data.length === 0) {
+    return null;
+  }
 
   const avg =
     data.reduce((sum, row) => sum + Number(row.rating), 0) / data.length;
@@ -26,31 +60,49 @@ export async function fetchRating(movieId) {
 }
 
 // -----------------------------------
+// fetch movie genres
+// -----------------------------------
 export async function fetchGenre(movieId) {
-  const { data: movieGenreRows, error } = await supabase
+  const { data: movieGenreRows, error: movieGenreError } = await supabase
     .from('movie_genres')
     .select('genre_id')
     .eq('movie_id', movieId);
 
-  if (error || !movieGenreRows) return [];
+  if (movieGenreError) {
+    console.error('Error fetching movie_genres:', movieGenreError.message);
+    return [];
+  }
+
+  if (!movieGenreRows || movieGenreRows.length === 0) {
+    return [];
+  }
 
   const genreIds = movieGenreRows.map((row) => row.genre_id);
 
-  const { data: genreRows } = await supabase
+  const { data: genreRows, error: genreError } = await supabase
     .from('genres')
     .select('name')
     .in('genre_id', genreIds);
+
+  if (genreError) {
+    console.error('Error fetching genres:', genreError.message);
+    return [];
+  }
 
   return genreRows?.map((row) => row.name) ?? [];
 }
 
 // -----------------------------------
-export async function searchMovies(inputStr) {
+// search_query(input_str, target_col, table)
+// generic movie search
+// -----------------------------------
+export async function searchMovies(inputStr, targetCol = 'title', table = 'movies') {
   const trimmed = inputStr.trim();
+
   if (!trimmed) return [];
 
   const { data, error } = await supabase
-    .from('movies')
+    .from(table)
     .select(`
       movie_id,
       title,
@@ -59,73 +111,121 @@ export async function searchMovies(inputStr) {
       release_year,
       runtime
     `)
-    .ilike('title', `%${trimmed}%`)
+    .ilike(targetCol, `%${trimmed}%`)
     .order('release_year', { ascending: false });
 
-  if (error) throw new Error('Failed to search movies.');
+  if (error) {
+    console.error('Movie search error:', error.message);
+    throw new Error('Failed to search movies.');
+  }
 
-  return Promise.all(
+  const enriched = await Promise.all(
     (data || []).map(async (movie) => {
       const [rating, genres] = await Promise.all([
         fetchRating(movie.movie_id),
         fetchGenre(movie.movie_id),
       ]);
 
-      return { ...movie, rating, genres };
+      return {
+        ...movie,
+        rating,
+        genres,
+      };
     })
   );
+
+  return enriched;
 }
 
 // -----------------------------------
+// search people by name
+// finds actors/directors/crew in people table
+// -----------------------------------
 export async function searchPeople(inputStr) {
   const trimmed = inputStr.trim();
+
   if (!trimmed) return [];
 
   const { data, error } = await supabase
     .from('people')
     .select('person_id, name')
     .ilike('name', `%${trimmed}%`)
-    .order('name');
+    .order('name', { ascending: true });
 
-  if (error) throw new Error('Failed to search people.');
+  if (error) {
+    console.error('People search error:', error.message);
+    throw new Error('Failed to search people.');
+  }
 
-  return Promise.all(
+  const enriched = await Promise.all(
     (data || []).map(async (person) => {
       const [castRows, directorRows] = await Promise.all([
-        supabase.from('cast_credits').select('movie_id').eq('person_id', person.person_id),
-        supabase.from('crew_credits').select('movie_id').eq('person_id', person.person_id).eq('job', 'Director'),
+        supabase
+          .from('cast_credits')
+          .select('movie_id', { count: 'exact', head: false })
+          .eq('person_id', person.person_id),
+        supabase
+          .from('crew_credits')
+          .select('movie_id', { count: 'exact', head: false })
+          .eq('person_id', person.person_id)
+          .eq('job', 'Director'),
       ]);
 
-      const actingCount = castRows.data?.length || 0;
-      const directingCount = directorRows.data?.length || 0;
+      const actingCount = castRows.data?.length ?? 0;
+      const directingCount = directorRows.data?.length ?? 0;
 
       let roleLabel = 'Person';
-      if (actingCount && directingCount) roleLabel = 'Actor / Director';
-      else if (actingCount) roleLabel = 'Actor';
-      else if (directingCount) roleLabel = 'Director';
 
-      return { ...person, actingCount, directingCount, roleLabel };
+      if (actingCount > 0 && directingCount > 0) {
+        roleLabel = 'Actor / Director';
+      } else if (actingCount > 0) {
+        roleLabel = 'Actor';
+      } else if (directingCount > 0) {
+        roleLabel = 'Director';
+      }
+
+      return {
+        ...person,
+        actingCount,
+        directingCount,
+        roleLabel,
+      };
     })
   );
+
+  return enriched;
 }
 
 // -----------------------------------
+// global search
+// -----------------------------------
 export async function runSearch(inputStr, searchType = 'all') {
   const trimmed = inputStr.trim();
-  if (!trimmed) return { movies: [], people: [] };
+
+  if (!trimmed) {
+    return {
+      movies: [],
+      people: [],
+    };
+  }
 
   if (searchType === 'movies') {
-    return { movies: await searchMovies(trimmed), people: [] };
+    const movies = await searchMovies(trimmed, 'title', 'movies');
+    return { movies, people: [] };
   }
 
   if (searchType === 'people') {
-    return { movies: [], people: await searchPeople(trimmed) };
+    const people = await searchPeople(trimmed);
+    return { movies: [], people };
   }
 
   const [movies, people] = await Promise.all([
-    searchMovies(trimmed),
+    searchMovies(trimmed, 'title', 'movies'),
     searchPeople(trimmed),
   ]);
 
-  return { movies, people };
+  return {
+    movies,
+    people,
+  };
 }

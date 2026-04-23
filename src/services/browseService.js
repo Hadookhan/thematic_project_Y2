@@ -1,7 +1,9 @@
 import { supabase } from '../lib/supabase';
 
+// --------------------------------------------------
 // ratings(movie_id, rating)
 // returns average rating for one movie
+// --------------------------------------------------
 export async function fetchRating(movieId) {
   const { data, error } = await supabase
     .from('ratings')
@@ -21,7 +23,9 @@ export async function fetchRating(movieId) {
   return Number(avg.toFixed(1));
 }
 
+// --------------------------------------------------
 // movie_genres(movie_id, genre_id) + genres(genre_id, name)
+// --------------------------------------------------
 export async function fetchGenre(movieId) {
   const { data: movieGenreRows, error: movieGenreError } = await supabase
     .from('movie_genres')
@@ -50,8 +54,10 @@ export async function fetchGenre(movieId) {
   return genreRows?.map((row) => row.name) ?? [];
 }
 
+// --------------------------------------------------
 // cast_credits(movie_id, person_id) + people(person_id, name)
-// actor filter 
+// actor filter helper
+// --------------------------------------------------
 export async function fetchCastNames(movieId) {
   const { data: castRows, error: castError } = await supabase
     .from('cast_credits')
@@ -80,8 +86,10 @@ export async function fetchCastNames(movieId) {
   return peopleRows?.map((row) => row.name) ?? [];
 }
 
+// --------------------------------------------------
 // crew_credits(movie_id, person_id, job) + people(person_id, name)
-// director filter 
+// director filter helper
+// --------------------------------------------------
 export async function fetchDirectorNames(movieId) {
   const { data: crewRows, error: crewError } = await supabase
     .from('crew_credits')
@@ -111,8 +119,10 @@ export async function fetchDirectorNames(movieId) {
   return peopleRows?.map((row) => row.name) ?? [];
 }
 
+// --------------------------------------------------
 // genres table for filter list
 // genres(genre_id, name)
+// --------------------------------------------------
 export async function fetchAllGenres() {
   const { data, error } = await supabase
     .from('genres')
@@ -127,7 +137,9 @@ export async function fetchAllGenres() {
   return data || [];
 }
 
+// --------------------------------------------------
 // reset state helper
+// --------------------------------------------------
 export function clearBrowseData() {
   return {
     searchInput: '',
@@ -138,8 +150,11 @@ export function clearBrowseData() {
     error: '',
   };
 }
+
+// --------------------------------------------------
 // movies(movie_id, title, overview, release_date, release_year, runtime, budget, revenue)
 // base movie fetch
+// --------------------------------------------------
 export async function getAllMovies(limit = 300) {
   const { data, error } = await supabase
     .from('movies')
@@ -163,7 +178,10 @@ export async function getAllMovies(limit = 300) {
 
   return data || [];
 }
-// title search 
+
+// --------------------------------------------------
+// title search from movies.title
+// --------------------------------------------------
 export async function searchMoviesByTitle(inputStr) {
   const trimmed = inputStr.trim();
 
@@ -194,6 +212,9 @@ export async function searchMoviesByTitle(inputStr) {
   return data || [];
 }
 
+// --------------------------------------------------
+// enrich each movie with related data
+// --------------------------------------------------
 export async function enrichMovies(movieRows) {
   return Promise.all(
     (movieRows || []).map(async (movie) => {
@@ -215,8 +236,9 @@ export async function enrichMovies(movieRows) {
   );
 }
 
-
-// side filter 
+// --------------------------------------------------
+// JS-side filter logic using correct schema fields
+// --------------------------------------------------
 export function filterMovies(movies, filters) {
   const {
     selectedGenres = [],
@@ -283,7 +305,9 @@ export function filterMovies(movies, filters) {
   });
 }
 
+// --------------------------------------------------
 // main browse loader
+// --------------------------------------------------
 export async function browseMovies({
   searchInput = '',
   selectedGenres = [],

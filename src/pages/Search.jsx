@@ -126,25 +126,47 @@ export default function Search() {
           </div>
         )}
 
-        {/* MOVIES */}
-        {!loading && movieResults.length > 0 && (
-          <section className="results-section">
-            <h2>Movies</h2>
+       {/* MOVIES */}
+{!loading && movieResults.length > 0 && (
+  <section className="results-section">
+    <h2>Movies</h2>
 
-            <div className="results-grid">
-              {movieResults.map((movie) => (
-                <Link
-                  key={movie.movie_id}
-                  to={`/movie/${movie.movie_id}`}
-                  className="card"
-                >
-                  <h3>{movie.title}</h3>
-                  <p>{movie.overview || 'No overview available.'}</p>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
+    <div className="results-grid">
+      {movieResults.map((movie) => (
+        <Link
+          key={movie.movie_id}
+          to={`/movie/${movie.movie_id}`}
+          className="card"
+        >
+          <h3>{movie.title}</h3>
+
+          <p className="movie-overview">
+            {movie.overview || 'No overview available.'}
+          </p>
+
+          <div className="movie-meta">
+            <span>📅 {movie.release_year ?? 'N/A'}</span>
+            <span>⏱ {movie.runtime ?? 'N/A'} mins</span>
+          </div>
+
+          <div className="movie-meta">
+            <span>⭐ {movie.rating ?? 'N/A'}</span>
+          </div>
+
+          <div className="movie-genres">
+            {movie.genres?.length > 0
+              ? movie.genres.map((genre, i) => (
+                  <span key={i} className="genre-pill">
+                    {genre}
+                  </span>
+                ))
+              : <span className="genre-pill">N/A</span>}
+          </div>
+        </Link>
+      ))}
+    </div>
+  </section>
+)}
 
         {/* ACTORS & DIRECTORS*/}
         {!loading && peopleResults.length > 0 && (
