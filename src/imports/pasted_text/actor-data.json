@@ -1,0 +1,414 @@
+[
+  {
+    "json_agg": [
+      {
+        "name": "Debi Sue Voorhees",
+        "acting": [
+          {
+            "title": "Friday the 13th: A New Beginning",
+            "year": 1985
+          }
+        ]
+      },
+      {
+        "name": "Laura Lane",
+        "acting": [
+          {
+            "title": "Swordfish",
+            "year": 2001
+          }
+        ]
+      },
+      {
+        "name": "Jack Webster",
+        "acting": [
+          {
+            "title": "Tom Horn",
+            "year": 1980
+          }
+        ]
+      },
+      {
+        "name": "Miguel Pérez",
+        "acting": [
+          {
+            "title": "Million Dollar Baby",
+            "year": 2004
+          },
+          {
+            "title": "Blow",
+            "year": 2001
+          },
+          {
+            "title": "A Shock to the System",
+            "year": 1990
+          }
+        ]
+      },
+      {
+        "name": "Keishi Nagatsuka",
+        "acting": [
+          {
+            "title": "Sakuran",
+            "year": 2007
+          },
+          {
+            "title": "Goth",
+            "year": 2008
+          },
+          {
+            "title": "Suspect X",
+            "year": 2008
+          },
+          {
+            "title": "Tokyo.sora",
+            "year": 2002
+          },
+          {
+            "title": "The Boy and the Beast",
+            "year": 2015
+          }
+        ]
+      },
+      {
+        "name": "Stephen Beach",
+        "acting": [
+          {
+            "title": "Pollock",
+            "year": 2000
+          }
+        ]
+      },
+      {
+        "name": "Seun Olagunju",
+        "acting": [
+          {
+            "title": "Blue State",
+            "year": 2007
+          }
+        ]
+      },
+      {
+        "name": "Derek Fuke",
+        "acting": [
+          {
+            "title": "The Charge of the Light Brigade",
+            "year": 1968
+          }
+        ]
+      },
+      {
+        "name": "Parley Baer",
+        "acting": [
+          {
+            "title": "Dave",
+            "year": 1993
+          },
+          {
+            "title": "The Ugly Dachshund",
+            "year": 1966
+          },
+          {
+            "title": "Skin Game",
+            "year": 1971
+          },
+          {
+            "title": "Day of the Evil Gun",
+            "year": 1968
+          },
+          {
+            "title": "Pray For Death",
+            "year": 1985
+          },
+          {
+            "title": "Deadline - U.S.A.",
+            "year": 1952
+          },
+          {
+            "title": "Gypsy",
+            "year": 1962
+          },
+          {
+            "title": "Follow Me, Boys!",
+            "year": 1966
+          },
+          {
+            "title": "Bedtime Story",
+            "year": 1964
+          },
+          {
+            "title": "The Young Lions",
+            "year": 1958
+          },
+          {
+            "title": "Those Calloways",
+            "year": 1965
+          },
+          {
+            "title": "Cash McCall",
+            "year": 1960
+          },
+          {
+            "title": "The Adventures of Huckleberry Finn",
+            "year": 1960
+          },
+          {
+            "title": "Union Station",
+            "year": 1950
+          },
+          {
+            "title": "Two on a Guillotine",
+            "year": 1965
+          },
+          {
+            "title": "The FBI Story",
+            "year": 1959
+          },
+          {
+            "title": "Carbon Copy",
+            "year": 1981
+          },
+          {
+            "title": "Halloween with the New Addams Family",
+            "year": 1977
+          },
+          {
+            "title": "A Fever In The Blood",
+            "year": 1961
+          },
+          {
+            "title": "Fearless Fagan",
+            "year": 1952
+          }
+        ]
+      },
+      {
+        "name": "Pauline Garon",
+        "acting": [
+          {
+            "title": "Shall We Dance",
+            "year": 1937
+          },
+          {
+            "title": "Wonder Bar",
+            "year": 1934
+          },
+          {
+            "title": "Song of the Saddle",
+            "year": 1936
+          }
+        ]
+      },
+      {
+        "name": "Natalie McNeil",
+        "acting": [
+          {
+            "title": "Spider-Man 3",
+            "year": 2007
+          }
+        ]
+      },
+      {
+        "name": "Erica Frank",
+        "acting": [
+          {
+            "title": "Class of Nuke 'Em High 2: Subhumanoid Meltdown",
+            "year": 1991
+          }
+        ]
+      },
+      {
+        "name": "Eugeniusz Priwieziencew",
+        "acting": [
+          {
+            "title": "With Fire and Sword",
+            "year": 1999
+          }
+        ]
+      },
+      {
+        "name": "Todd Leatherbury",
+        "acting": [
+          {
+            "title": "Murder by Numbers",
+            "year": 2002
+          }
+        ]
+      },
+      {
+        "name": "Dido Miles",
+        "acting": [
+          {
+            "title": "Emma",
+            "year": 1996
+          },
+          {
+            "title": "Mum & Dad",
+            "year": 2008
+          }
+        ]
+      },
+      {
+        "name": "Ellie Suriaty Omar",
+        "acting": [
+          {
+            "title": "Anna and the King",
+            "year": 1999
+          }
+        ]
+      },
+      {
+        "name": "Gilberto Goday",
+        "acting": [
+          {
+            "title": "Moonstruck",
+            "year": 1987
+          }
+        ]
+      },
+      {
+        "name": "Holly Weston",
+        "acting": [
+          {
+            "title": "Filth and Wisdom",
+            "year": 2008
+          },
+          {
+            "title": "Howl",
+            "year": 2015
+          },
+          {
+            "title": "The Danish Girl",
+            "year": 2015
+          },
+          {
+            "title": "Assassin",
+            "year": 2015
+          }
+        ]
+      },
+      {
+        "name": "John Beck",
+        "acting": [
+          {
+            "title": "Rollerball",
+            "year": 1975
+          },
+          {
+            "title": "Sleeper",
+            "year": 1973
+          },
+          {
+            "title": "Pat Garrett & Billy the Kid",
+            "year": 1973
+          },
+          {
+            "title": "Timecop 2: The Berlin Decision",
+            "year": 2003
+          },
+          {
+            "title": "The Big Bus",
+            "year": 1976
+          },
+          {
+            "title": "Lawman",
+            "year": 1971
+          },
+          {
+            "title": "Sky Riders",
+            "year": 1976
+          },
+          {
+            "title": "Audrey Rose",
+            "year": 1977
+          },
+          {
+            "title": "Project Viper",
+            "year": 2002
+          },
+          {
+            "title": "Black Day Blue Night",
+            "year": 1996
+          },
+          {
+            "title": "The Other Side of Midnight",
+            "year": 1977
+          },
+          {
+            "title": "Crash Landing",
+            "year": 2006
+          },
+          {
+            "title": "The Call of the Wild",
+            "year": 1976
+          },
+          {
+            "title": "Mrs. Pollifax: Spy",
+            "year": 1971
+          },
+          {
+            "title": "Babies For Sale",
+            "year": 1940
+          },
+          {
+            "title": "Perry Mason: The Case of the Lady in the Lake",
+            "year": 1988
+          },
+          {
+            "title": "ABCs of Death 2.5",
+            "year": 2016
+          }
+        ]
+      },
+      {
+        "name": "Paul Benjamin",
+        "acting": [
+          {
+            "title": "Do the Right Thing",
+            "year": 1989
+          },
+          {
+            "title": "The Station Agent",
+            "year": 2003
+          },
+          {
+            "title": "Midnight Cowboy",
+            "year": 1969
+          },
+          {
+            "title": "Escape from Alcatraz",
+            "year": 1979
+          },
+          {
+            "title": "Hoodlum",
+            "year": 1997
+          },
+          {
+            "title": "Rosewood",
+            "year": 1997
+          },
+          {
+            "title": "The Anderson Tapes",
+            "year": 1971
+          },
+          {
+            "title": "The Education of Sonny Carson",
+            "year": 1974
+          },
+          {
+            "title": "Leadbelly",
+            "year": 1976
+          },
+          {
+            "title": "The Deadly Trackers",
+            "year": 1973
+          },
+          {
+            "title": "One in a Million: The Ron LeFlore Story",
+            "year": 1978
+          }
+        ]
+      }
+    ]
+  }
+]
