@@ -1,27 +1,43 @@
-import { Link } from "react-router-dom";
+import { useState } from 'react';
+import { Link, NavLink } from 'react-router-dom';
+import './navbar.css';
 
 function Navbar() {
+  const [open, setOpen] = useState(false);
+
+  const closeMenu = () => setOpen(false);
+
   return (
     <header className="navbar">
-      <Link to="/" className="logo">
-        Movies4US <span className="logo-dot">•</span>
+      <button
+        className="menu-toggle"
+        onClick={() => setOpen(!open)}
+        aria-label="Toggle navigation menu"
+      >
+        ☰
+      </button>
+
+      <Link to="/" className="logo" onClick={closeMenu}>
+        Movies 4 US <span className="logo-dot">•</span>
       </Link>
 
-      <nav className="nav-links">
-        <Link to="/" className="nav-link">Home</Link>
-        <Link to="/browse" className="nav-link">Browse</Link>
-        <Link to="/search" className="nav-link">Search</Link>
+      <nav className={`nav-links ${open ? 'open' : ''}`}>
+        <NavLink to="/" className="nav-link" onClick={closeMenu}>
+          Home
+        </NavLink>
 
-        {/* single combined page */}
-        <Link to="/people" className="nav-link">
-          Actors & Directors
-        </Link>
+        <NavLink to="/browse" className="nav-link" onClick={closeMenu}>
+          Browse
+        </NavLink>
 
-        {/* disable or hide until built */}
-        <span className="nav-link disabled">Watchlist</span>
+        <NavLink to="/search" className="nav-link" onClick={closeMenu}>
+          Search
+        </NavLink>
       </nav>
 
-      <div className="profile-circle">◌</div>
+      <button className="profile-circle" aria-label="Profile">
+        ◌
+      </button>
     </header>
   );
 }

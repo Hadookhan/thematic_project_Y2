@@ -5,6 +5,7 @@ import Browse from './pages/Browse';
 import Search from './pages/Search';
 import Actors_Directors from './pages/Actors_Directors';
 import Movie from './pages/Movie';
+// import Navbar from './components/navbar'
 
 function App() {
 

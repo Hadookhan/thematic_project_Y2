@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { runSearch, clearSearchData } from '../services/searchService';
 import '../css/search.css';
+import Navbar from '../components/navbar';
 
 export default function Search() {
   const [searchInput, setSearchInput] = useState('');
@@ -60,23 +61,9 @@ export default function Search() {
     peopleResults.length === 0;
 
   return (
+    <>
+    <Navbar />
     <div className="search-page">
-
-      {/* INLINE NAVBAR */}
-      <header className="navbar">
-        <Link to="/" className="logo">
-          Movies4US <span className="logo-dot">•</span>
-        </Link>
-
-        <nav className="nav-links">
-          <Link to="/" className="nav-link">Home</Link>
-          <Link to="/browse" className="nav-link">Browse</Link>
-          <Link to="/search" className="nav-link active">Search</Link>
-          <Link to="/people" className="nav-link">Actors & Directors</Link>
-        </nav>
-
-        <div className="profile-circle">◌</div>
-      </header>
 
       {/* SEARCH UI*/}
       <div className="search-container">
@@ -192,5 +179,6 @@ export default function Search() {
         )}
       </div>
     </div>
+    </>
   );
 }
