@@ -6,6 +6,7 @@ import {
 } from '../services/browseService';
 import { Link } from 'react-router-dom';
 import '../css/browse.css';
+import Navbar from '../components/navbar';
 
 export default function Browse() {
   const [movies, setMovies] = useState([]);
@@ -238,6 +239,8 @@ export default function Browse() {
   }
 
   return (
+    <>
+    <Navbar />
     <div className="browse-shell">
       <div className="browse-top-spacer" />
 
@@ -444,5 +447,6 @@ export default function Browse() {
         </main>
       </div>
     </div>
+    </>
   );
 }

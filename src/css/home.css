@@ -1,0 +1,277 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #07111f;
+  font-family: 'Inter', sans-serif;
+  color: #ffffff;
+}
+
+.home-shell {
+  min-height: 100vh;
+  background: #061625;
+  padding-bottom: 4rem;
+}
+
+.home-nav {
+  height: 110px;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #071827;
+  border-bottom-left-radius: 34px;
+  border-bottom-right-radius: 34px;
+}
+
+.logo {
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.logo span {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-left: 8px;
+  border-radius: 50%;
+  background: #ff6b1a;
+}
+
+.menu-btn,
+.profile-btn {
+  width: 70px;
+  height: 70px;
+  border: none;
+  border-radius: 24px;
+  font-size: 2rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.menu-btn {
+  background: #1f4169;
+  color: #ff6b1a;
+}
+
+.profile-btn {
+  background: #ff6b1a;
+  color: #ffffff;
+  box-shadow: 0 10px 35px rgba(255, 107, 26, 0.45);
+}
+
+.hero-section {
+  max-width: 1500px;
+  height: 560px;
+  margin: 0 auto;
+  background: linear-gradient(160deg, #284d78, #071827);
+  border-bottom-left-radius: 36px;
+  border-bottom-right-radius: 36px;
+  overflow: hidden;
+}
+
+.hero-overlay {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  padding: 4rem;
+  background: linear-gradient(
+    to bottom,
+    rgba(4, 18, 32, 0.05),
+    rgba(4, 18, 32, 0.95)
+  );
+}
+
+.hero-content h2 {
+  margin: 0 0 1.5rem;
+  font-size: 4rem;
+  font-weight: 800;
+  letter-spacing: -2px;
+}
+
+.hero-meta {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.genre-pill {
+  padding: 0.9rem 1.8rem;
+  background: #ff6b1a;
+  border-radius: 999px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  box-shadow: 0 12px 30px rgba(255, 107, 26, 0.45);
+}
+
+.rating {
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.search-section {
+  max-width: 1500px;
+  margin: 2rem auto 0;
+  padding: 0 4rem;
+}
+
+.search-bar {
+  display: flex;
+  gap: 1rem;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 1.2rem 1.5rem;
+  border: 2px solid #244a74;
+  border-radius: 20px;
+  outline: none;
+  background: #0b2035;
+  color: #ffffff;
+  font-size: 1rem;
+}
+
+.search-bar input::placeholder {
+  color: #8ea2b8;
+}
+
+.search-bar button {
+  padding: 0 1.8rem;
+  border: none;
+  border-radius: 20px;
+  background: #ff6b1a;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.movie-section {
+  max-width: 1500px;
+  margin: 4rem auto 0;
+  padding: 0 4rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.section-header p {
+  margin: 0 0 0.6rem;
+  color: #ff6b1a;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 800;
+}
+
+.section-header a {
+  color: #ff6b1a;
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2.2rem;
+}
+
+.movie-card {
+  min-width: 0;
+}
+
+.poster-placeholder {
+  position: relative;
+  height: 360px;
+  background: #284d78;
+  border-radius: 28px;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.04);
+}
+
+.bookmark {
+  position: absolute;
+  top: 1.4rem;
+  right: 1.4rem;
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 50%;
+  background: #092036;
+  color: #ff6b1a;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+.movie-card h3 {
+  margin: 1.4rem 0 0.6rem;
+  font-size: 1.6rem;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.movie-info {
+  display: flex;
+  justify-content: space-between;
+  color: #b5c0ce;
+  font-size: 1.1rem;
+}
+
+.movie-genres {
+  margin-top: 0.7rem;
+  color: #7f93aa;
+  font-size: 0.95rem;
+}
+
+.status-text {
+  max-width: 1500px;
+  margin: 1.5rem auto;
+  padding: 0 4rem;
+  color: #b5c0ce;
+}
+
+@media (max-width: 1100px) {
+  .movie-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .hero-content h2 {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 800px) {
+  .home-nav,
+  .search-section,
+  .movie-section,
+  .status-text {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .movie-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero-overlay {
+    padding: 2rem;
+  }
+}

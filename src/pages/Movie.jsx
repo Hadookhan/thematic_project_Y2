@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { fetchMoviePageData } from '../services/movieService';
+import Navbar from '../components/navbar';
 
 export default function Movie() {
   const { movieId } = useParams();
@@ -69,6 +70,8 @@ export default function Movie() {
   }
 
   return (
+    <>
+    <Navbar />
     <div className="movie-page">
       <Link to="/browse">← Back to Browse</Link>
 
@@ -130,5 +133,6 @@ export default function Movie() {
         )}
       </section>
     </div>
+    </>
   );
 }

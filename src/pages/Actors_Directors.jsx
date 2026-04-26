@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { fetchPersonPageData } from '../services/Actors_Directors_Service';
+import Navbar from '../components/navbar';
 
 export default function Actors_Directors() {
   const { personId } = useParams();
@@ -67,6 +68,8 @@ export default function Actors_Directors() {
   }
 
   return (
+    <>
+    <Navbar />
     <div className="person-page">
       <Link to="/browse">← Back to Browse</Link>
 
@@ -132,5 +135,6 @@ export default function Actors_Directors() {
         </section>
       )}
     </div>
+    </>
   );
 }
