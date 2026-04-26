@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import '../css/home.css';
 import Navbar from '../components/navbar';
+import { Link } from 'react-router-dom';
 
 export default function Home() {
   const [featuredMovie, setFeaturedMovie] = useState(null);
@@ -180,21 +181,30 @@ export default function Home() {
         <div className="movie-grid">
           {displayMovies.length > 0 ? (
             displayMovies.map((movie) => (
-              <article className="movie-card" key={movie.movie_id}>
-                <div className="poster-placeholder">
-                  <button className="bookmark">♡</button>
-                </div>
+              <Link
+                to={`/movie/${movie.movie_id}`}
+                key={movie.movie_id}
+                className="movie-card-link"
+              >
+                <article className="movie-card">
+                  <div className="poster-placeholder">
+                    <button className="bookmark">♡</button>
+                  </div>
 
-                <h3>{movie.title}</h3>
-                <div className="movie-info">
-                  <span>{movie.release_year ?? movie.year ?? '2024'}</span>
-                  <span>⭐ {movie.rating ?? 'N/A'}</span>
-                </div>
+                  <h3>{movie.title}</h3>
 
-                <p className="movie-genres">
-                  {movie.genres?.length > 0 ? movie.genres.join(', ') : 'No genres'}
-                </p>
-              </article>
+                  <div className="movie-info">
+                    <span>{movie.release_year ?? movie.year ?? '2024'}</span>
+                    <span>⭐ {movie.rating ?? 'N/A'}</span>
+                  </div>
+
+                  <p className="movie-genres">
+                    {movie.genres?.length > 0
+                      ? movie.genres.join(', ')
+                      : 'No genres'}
+                  </p>
+                </article>
+              </Link>
             ))
           ) : (
             !loading && <p className="status-text">No movies found.</p>
