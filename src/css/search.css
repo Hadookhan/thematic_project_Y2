@@ -1,0 +1,150 @@
+.search-page {
+    min-height: 100vh;
+    background: #0b1f33;
+    color: #f5f7fb;
+    font-family: system-ui, sans-serif;
+  }
+  
+  /* ───────── NAVBAR ───────── */
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 36px;
+    background: #111f33;
+    border-bottom: 1px solid #1f2f45;
+  }
+  
+  .logo {
+    font-size: 22px;
+    font-weight: 800;
+    color: #ff7417;
+  }
+  
+  .nav-links {
+    display: flex;
+    gap: 18px;
+  }
+  
+  .nav-link {
+    color: #cfd8e3;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: 0.2s;
+  }
+  
+  .nav-link:hover {
+    color: #ff7417;
+  }
+  
+  .nav-link.active {
+    color: #ff7417;
+  }
+  
+  .profile-circle {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid #2b3d57;
+  }
+  
+  /* ───────── SEARCH UI ───────── */
+  .search-container {
+    padding: 40px;
+  }
+  
+  .search-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+  }
+  
+  .search-form {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+  }
+  
+  .search-input {
+    flex: 1;
+    min-width: 220px;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: #1a2c44;
+    color: white;
+  }
+  
+  .search-select {
+    padding: 12px;
+    border-radius: 12px;
+    background: #1a2c44;
+    color: white;
+    border: none;
+  }
+  
+  .search-btn {
+    background: #ff7417;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    color: white;
+  }
+  
+  .clear-btn {
+    background: transparent;
+    border: 1px solid #ff7417;
+    padding: 12px 18px;
+    border-radius: 12px;
+    color: #ff7417;
+    cursor: pointer;
+  }
+  
+  /* ───────── RESULTS ───────── */
+  .results-section {
+    margin-top: 30px;
+  }
+  
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  
+  .card {
+    background: #14263d;
+    padding: 16px;
+    border-radius: 14px;
+    text-decoration: none;
+    color: white;
+    transition: 0.2s;
+  }
+  
+  .card:hover {
+    transform: translateY(-3px);
+    background: #1b3554;
+  }
+  
+  /* ───────── NO RESULTS ───────── */
+  .no-results {
+    text-align: center;
+    padding: 50px 20px;
+  }
+  
+  .no-results-icon {
+    font-size: 3rem;
+    opacity: 0.5;
+  }
+  
+  /* ───────── STATES ───────── */
+  .loading {
+    color: #aaa;
+  }
+  
+  .error {
+    color: #ff5c5c;
+  }
