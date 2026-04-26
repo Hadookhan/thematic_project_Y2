@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { fetchMoviePageData } from '../services/movieService';
 import Navbar from '../components/navbar';
+import '../css/movie.css';
 
 export default function Movie() {
   const { movieId } = useParams();
@@ -38,101 +39,181 @@ export default function Movie() {
       }
     }
 
-    if (movieId) {
-      loadMovie();
-    }
+    if (movieId) loadMovie();
   }, [movieId]);
 
   if (loading) {
     return (
-      <div className="movie-page">
-        <p>Loading...</p>
-      </div>
+      <>
+        <Navbar />
+        <main className="movie-page">
+          <p className="movie-status">Loading...</p>
+        </main>
+      </>
     );
   }
 
-  if (error) {
+  if (error || !movie) {
     return (
-      <div className="movie-page">
-        <p>{error}</p>
-        <Link to="/browse">Back to Browse</Link>
-      </div>
+      <>
+        <Navbar />
+        <main className="movie-page">
+          <p className="movie-status">{error || 'Movie not found.'}</p>
+          <Link className="back-link" to="/browse">← Back to Browse</Link>
+        </main>
+      </>
     );
   }
 
-  if (!movie) {
-    return (
-      <div className="movie-page">
-        <p>Movie not found.</p>
-        <Link to="/browse">Back to Browse</Link>
-      </div>
-    );
-  }
+  const director =
+    crew.find((member) => member.job?.toLowerCase() === 'director')?.name || 'N/A';
+
+  const mainCast = cast.slice(0, 3).map((member) => member.name).join(', ') || 'N/A';
+
+  const releaseText =
+    movie.release_date ||
+    movie.release_year ||
+    'N/A';
+
+  const formatMoney = (value) => {
+    if (!value) return 'N/A';
+    return `$${Number(value).toLocaleString()}`;
+  };
 
   return (
     <>
-    <Navbar />
-    <div className="movie-page">
-      <Link to="/browse">← Back to Browse</Link>
+      <Navbar />
 
-      <h1>{movie.title}</h1>
+      <main className="movie-page">
+        <Link className="back-link" to="/browse">← Back to Browse</Link>
 
-      <p><strong>Overview:</strong> {movie.overview || 'No overview available.'}</p>
-      <p><strong>Release Date:</strong> {movie.release_date || 'N/A'}</p>
-      <p><strong>Release Year:</strong> {movie.release_year || 'N/A'}</p>
-      <p><strong>Runtime:</strong> {movie.runtime ?? 'N/A'} mins</p>
-      <p><strong>Budget:</strong> {movie.budget ?? 'N/A'}</p>
-      <p><strong>Revenue:</strong> {movie.revenue ?? 'N/A'}</p>
-      <p><strong>Rating:</strong> {rating ?? 'N/A'}</p>
-      <p>
-        <strong>Genres:</strong>{' '}
-        {genres.length > 0 ? genres.join(', ') : 'N/A'}
-      </p>
+        <section className="movie-hero">
+          <Link to="/browse" className="close-btn">×</Link>
 
-      <section>
-        <h2>Cast</h2>
-        {cast.length > 0 ? (
-          <ul>
-            {cast.map((member) => (
-              <li key={`${member.person_id}-${member.cast_order}`}>
-                <Link to={`/person/${member.person_id}`}>{member.name}</Link>
-                {` as ${member.character || 'Unknown Character'}`}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No cast information available.</p>
-        )}
-      </section>
+          <div className="poster-box"></div>
 
-      <section>
-        <h2>Crew</h2>
-        {crew.length > 0 ? (
-          <ul>
-            {crew.map((member, index) => (
-              <li key={`${member.person_id}-${member.job}-${index}`}>
-                <Link to={`/person/${member.person_id}`}>{member.name}</Link>
-                {` - ${member.job || 'Unknown Job'} (${member.department || 'Unknown Department'})`}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No crew information available.</p>
-        )}
-      </section>
+          <div className="movie-main-info">
+            <h1>{movie.title}</h1>
+            <p className="movie-year">{movie.release_year || 'N/A'}</p>
 
-      <section>
-        <h2>External Links</h2>
-        {links ? (
-          <div>
-            <p>IMDb ID: {links.imdb_id || 'N/A'}</p>
-            <p>TMDb ID: {links.tmdb_id || 'N/A'}</p>
+            <p className="movie-rating">
+              ⭐ <strong>{rating ?? 'N/A'}</strong> <span>/10</span>
+            </p>
           </div>
-        ) : (
-          <p>No external links available.</p>
-        )}
-      </section>
-    </div>
+        </section>
+
+        <section className="genre-row">
+          {genres.length > 0 ? (
+            genres.map((genre) => (
+              <span key={genre} className="genre-chip">{genre}</span>
+            ))
+          ) : (
+            <span className="genre-chip">No genres</span>
+          )}
+        </section>
+
+        <section className="movie-stats">
+          <div>
+            <span>⏱</span>
+            <p>Runtime</p>
+            <strong>{movie.runtime ? `${movie.runtime}m` : 'N/A'}</strong>
+          </div>
+
+          <div>
+            <span>🌐</span>
+            <p>Country</p>
+            <strong>{movie.production_countries || movie.country || 'N/A'}</strong>
+          </div>
+
+          <div>
+            <span>文</span>
+            <p>Language</p>
+            <strong>{movie.original_language || movie.language || 'N/A'}</strong>
+          </div>
+
+          <div>
+            <span>🗓</span>
+            <p>Released</p>
+            <strong>{releaseText}</strong>
+          </div>
+        </section>
+
+        <section className="synopsis">
+          <h2>Synopsis</h2>
+          <p>
+            {movie.overview || 'No overview available.'}
+            {movie.overview && <span> Read More</span>}
+          </p>
+        </section>
+
+        <section className="details-card">
+          <div className="detail-row">
+            <span>Director</span>
+            <strong>{director}</strong>
+          </div>
+
+          <div className="detail-row">
+            <span>Main Cast</span>
+            <strong>{mainCast}</strong>
+          </div>
+
+          <div className="detail-row">
+            <span>Genre</span>
+            <strong>{genres.length > 0 ? genres.join(', ') : 'N/A'}</strong>
+          </div>
+
+          <div className="detail-row">
+            <span>Budget</span>
+            <strong>{formatMoney(movie.budget)}</strong>
+          </div>
+
+          <div className="detail-row">
+            <span>Box Office</span>
+            <strong>{formatMoney(movie.revenue)}</strong>
+          </div>
+
+          <div className="detail-row">
+            <span>External Links</span>
+            <strong>
+              IMDb: {links?.imdb_id || 'N/A'} | TMDb: {links?.tmdb_id || 'N/A'}
+            </strong>
+          </div>
+        </section>
+
+        <button className="watchlist-btn">＋ Add to Watchlist</button>
+
+        <section className="full-details">
+          <h2>View Full Details</h2>
+
+          <div className="list-section">
+            <h3>Cast</h3>
+            {cast.length > 0 ? (
+              cast.map((member) => (
+                <p key={`${member.person_id}-${member.cast_order}`}>
+                  <Link to={`/person/${member.person_id}`}>{member.name}</Link>
+                  {` as ${member.character || 'Unknown Character'}`}
+                </p>
+              ))
+            ) : (
+              <p>No cast information available.</p>
+            )}
+          </div>
+
+          <div className="list-section">
+            <h3>Crew</h3>
+            {crew.length > 0 ? (
+              crew.map((member, index) => (
+                <p key={`${member.person_id}-${member.job}-${index}`}>
+                  <Link to={`/person/${member.person_id}`}>{member.name}</Link>
+                  {` - ${member.job || 'Unknown Job'} (${member.department || 'Unknown Department'})`}
+                </p>
+              ))
+            ) : (
+              <p>No crew information available.</p>
+            )}
+          </div>
+        </section>
+      </main>
     </>
   );
 }
