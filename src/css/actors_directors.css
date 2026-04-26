@@ -1,0 +1,216 @@
+.person-page {
+  min-height: 100vh;
+  background: #061827;
+  color: #ffffff;
+  padding: 0 4rem 5rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.person-topbar {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 2rem 0;
+  border-top: 1px solid #284d78;
+  border-bottom: 1px solid #284d78;
+}
+
+.person-back {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.person-back:hover {
+  color: #ff6b1a;
+}
+
+.person-hero {
+  max-width: 1500px;
+  margin: 4rem auto 0;
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+}
+
+.person-avatar {
+  width: 260px;
+  height: 260px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #284d78;
+  border: 10px solid #315987;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.person-heading h1 {
+  margin: 0 0 1.2rem;
+  font-size: 4rem;
+  font-weight: 800;
+  letter-spacing: -2px;
+}
+
+.person-heading span {
+  display: inline-block;
+  padding: 0.9rem 2rem;
+  background: #ff6b1a;
+  border-radius: 999px;
+  font-size: 1.3rem;
+  font-weight: 800;
+  box-shadow: 0 15px 40px rgba(255, 107, 26, 0.35);
+}
+
+.person-bio {
+  max-width: 1500px;
+  margin: 4rem auto 0;
+}
+
+.person-bio h2 {
+  margin: 0 0 1.5rem;
+  font-size: 2.3rem;
+  font-weight: 800;
+}
+
+.person-bio p {
+  max-width: 950px;
+  margin: 0;
+  color: #d3dce8;
+  font-size: 1.35rem;
+  line-height: 1.7;
+}
+
+.person-bio strong {
+  color: #ff6b1a;
+}
+
+.person-info-card {
+  max-width: 1500px;
+  margin: 3.5rem auto 0;
+  background: #203f66;
+  border-radius: 28px;
+  padding: 2.5rem;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.06);
+}
+
+.person-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem 4rem;
+}
+
+.person-info-grid p {
+  margin: 0 0 0.7rem;
+  color: #a9b7c9;
+  font-size: 1.2rem;
+}
+
+.person-info-grid strong {
+  font-size: 1.55rem;
+  line-height: 1.4;
+}
+
+.known-for {
+  grid-column: span 2;
+}
+
+.filmography-section {
+  max-width: 1500px;
+  margin: 4rem auto 0;
+}
+
+.section-label {
+  margin: 0 0 2rem;
+  color: #ff6b1a;
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.filmography-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2.2rem;
+}
+
+.film-card {
+  color: #ffffff;
+  text-decoration: none;
+  display: block;
+  transition: transform 0.2s ease;
+}
+
+.film-card:hover {
+  transform: translateY(-6px);
+}
+
+.film-poster {
+  height: 320px;
+  border-radius: 24px;
+  background: #284d78;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.04);
+}
+
+.film-card h3 {
+  margin: 1.2rem 0 0.4rem;
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.film-card p {
+  margin: 0 0 0.5rem;
+  color: #a9b7c9;
+}
+
+.film-card span {
+  color: #ff6b1a;
+  font-weight: 800;
+}
+
+.person-status,
+.empty-person-section {
+  max-width: 1500px;
+  margin: 3rem auto;
+  color: #d3dce8;
+  font-size: 1.2rem;
+}
+
+@media (max-width: 1000px) {
+  .person-page {
+    padding: 0 2rem 4rem;
+  }
+
+  .person-hero {
+    gap: 2rem;
+  }
+
+  .person-heading h1 {
+    font-size: 3rem;
+  }
+
+  .filmography-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .person-hero {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .person-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .known-for {
+    grid-column: span 1;
+  }
+
+  .filmography-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .person-back {
+    font-size: 1.5rem;
+  }
+}
