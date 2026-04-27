@@ -309,17 +309,21 @@ export function filterMovies(movies, filters) {
 // main browse loader
 // --------------------------------------------------
 export async function browseMovies({
-  searchInput = '',
-  selectedGenres = [],
-  minYear = '',
-  maxYear = '',
-  minBudget = '',
-  maxBudget = '',
-  minRevenue = '',
-  maxRevenue = '',
-  actorName = '',
-  directorName = '',
-} = {}) {
+  searchInput,
+  selectedGenres,
+  minYear,
+  maxYear,
+  minBudget,
+  maxBudget,
+  minRevenue,
+  maxRevenue,
+  actorName,
+  directorName,
+  page = 0,
+  pageSize = 50,
+}) {
+  const from = page * pageSize;
+  const to = from + pageSize - 1;
   const baseMovies = await searchMoviesByTitle(searchInput);
   const enrichedMovies = await enrichMovies(baseMovies);
 
@@ -341,5 +345,5 @@ export async function browseMovies({
     return yearB - yearA;
   });
 
-  return filtered;
+  return filtered.slice(from, to + 1);
 }
