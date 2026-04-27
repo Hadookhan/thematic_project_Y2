@@ -73,8 +73,7 @@ export default function Home() {
     const { data, error } = await supabase
       .from('movies')
       .select('*')
-      .ilike('title', `%${inputStr}%`)
-      .limit(12);
+      .ilike('title', `%${inputStr}%`);
 
     if (error) {
       setError('Failed to search movies.');

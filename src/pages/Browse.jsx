@@ -11,7 +11,9 @@ import Navbar from '../components/navbar';
 export default function Browse() {
   const [movies, setMovies] = useState([]);
   const [genreOptions, setGenreOptions] = useState([]);
-
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const PAGE_SIZE = 50;
   const [searchInput, setSearchInput] = useState('');
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [selectedYears, setSelectedYears] = useState([]);
@@ -30,18 +32,16 @@ export default function Browse() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const yearOptions = [
-    '2024',
-    '2023',
-    '2022',
-    '2021',
-    '2020',
-    '2019',
-    '2018',
-    '2017',
-    '2016',
-    '2015',
-  ];
+  const yearOptions = useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+
+    for (let y = currentYear; y >= 1900; y--) {
+      years.push(String(y));
+    }
+
+    return years;
+  }, []);
 
   const budgetOptions = [
     '0-10000000',
@@ -158,9 +158,12 @@ export default function Browse() {
         maxRevenue: revenueRange.max,
         actorName,
         directorName,
+        page,
+        pageSize: PAGE_SIZE,
       });
 
-      setMovies(results);
+      setMovies((prev) => page === 0 ? results : [...prev, ...results]);
+      setHasMore(results.length === PAGE_SIZE);
     } catch (err) {
       console.error(err);
       setError('Failed to load browse results.');
@@ -181,8 +184,11 @@ export default function Browse() {
     }
 
     loadGenres();
-    loadBrowseData();
   }, []);
+
+  useEffect(() => {
+  loadBrowseData();
+  }, [page]);
 
   const activeFilters = useMemo(() => {
     const pills = [];
@@ -235,7 +241,12 @@ export default function Browse() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    await loadBrowseData();
+
+    if (page === 0) {
+      await loadBrowseData();
+    } else {
+      setPage(0);
+    }
   }
 
   return (
@@ -434,7 +445,7 @@ export default function Browse() {
                       <h3>{movie.title || `Movie Title ${index + 1}`}</h3>
                       <p>
                         {movie.release_year ?? 'N/A'} •{' '}
-                        {movie.genres?.[0] || 'Action'}
+                        {movie.genres?.length ? movie.genres.join(', ') : 'N/A'}
                       </p>
                     </div>
                   </article>
@@ -444,6 +455,15 @@ export default function Browse() {
               !loading && <p className="browse-message">No movies found.</p>
             )}
           </div>
+          {hasMore && !loading && (
+            <button
+              type="button"
+              className="apply-btn"
+              onClick={() => setPage((prev) => prev + 1)}
+            >
+              Load More
+            </button>
+          )}
         </main>
       </div>
     </div>
